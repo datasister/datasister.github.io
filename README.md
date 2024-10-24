@@ -1,1 +1,1 @@
-datasister.githu.io
+datasister.github.io
