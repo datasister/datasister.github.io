@@ -15,11 +15,11 @@ h1 {
 .about-link {
     position: absolute;
     top: 0;
-    right: 0;
+    right: 20px;
     font-size: 16px;
     text-decoration: none;
     color: #007bff; /* You can adjust this color */
-    margin-top: 10px;
+    margin-top: 55px;
 }
 
 .about-link:hover {
@@ -93,6 +93,7 @@ h1 {
 }
 
 .container {
+    position: relative;
     max-width: 900px;  /* Ensure everything stays within 900px */
     margin: 0 auto;
     background-color: #fff;
