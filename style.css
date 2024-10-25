@@ -12,6 +12,20 @@ h1 {
     font-size: 2em;
 }
 
+.about-link {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 16px;
+    text-decoration: none;
+    color: #007bff; /* You can adjust this color */
+    margin-top: 10px;
+}
+
+.about-link:hover {
+    text-decoration: underline;
+}
+
 /* Field Types Section */
 .field-types {
     width: 250px; /* Fixed width for the field types */
