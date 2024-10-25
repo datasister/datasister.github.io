@@ -13,9 +13,9 @@ h1 {
 }
 
 .about-link {
-    position: absolute;
-    top: 0;
-    right: 20px;
+    position: relative;
+    bottom: 37px;
+    right: -750px;
     font-size: 14px;
     text-decoration: none;
     color: #007bff; /* You can adjust this color */
@@ -93,7 +93,6 @@ h1 {
 }
 
 .container {
-    position: relative;
     max-width: 900px;  /* Ensure everything stays within 900px */
     margin: 0 auto;
     background-color: #fff;
