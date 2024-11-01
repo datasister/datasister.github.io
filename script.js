@@ -37,10 +37,18 @@ function handleFile(event) {
 }
 
 function processCSV(data) {
-    // Use regex to split rows while respecting quotes
+    // Split rows by line breaks
     const rows = data.split('\n').map(row => {
-        const regex = /(?:,|\n)(?=(?:[^"]*"[^"]*")*[^"]*$)/; // Split on commas not inside quotes
-        return row.split(regex).map(cell => cell.replace(/^"|"$/g, '').replace(/\\"/g, '"')); // Remove quotes and unescape
+        // Match cells, allowing commas within quoted strings
+        const regex = /(".*?"|[^",\n]+)(?=\s*,|\s*$)/g;
+        const cells = [];
+
+        let match;
+        while ((match = regex.exec(row)) !== null) {
+            const cell = match[0].replace(/^"|"$/g, '').replace(/\\"/g, '"'); // Remove outer quotes, unescape inner quotes
+            cells.push(cell);
+        }
+        return cells;
     });
 
     const headers = rows[0];
@@ -96,7 +104,7 @@ document.getElementById('expandBtn').addEventListener('click', () => {
     expandBtn.style.display = 'none'; // Hide the expand button
 });
 
-// Function to create the table for the first five rows
+// Function to create the table for the first three rows
 function createRowsTable(rows, headers) {
     const tableHeaderHtml = headers.map(header => `<th>${header}</th>`).join('');
     const tableRowsHtml = rows.map(row => {
@@ -293,10 +301,6 @@ function showDetail(header, percentage) {
     document.getElementById('modalText').innerHTML = modalText + tableHtml; // Use innerHTML to include the table
     document.getElementById('myModal').style.display = "block";
 }
-
-
-
-
 
 // Function to close the modal
 function closeModal() {
