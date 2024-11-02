@@ -37,15 +37,20 @@ function handleFile(event) {
 }
 
 function processCSV(data) {
-    // Split rows by line breaks
     const rows = data.split('\n').map(row => {
         // Match cells, allowing commas within quoted strings
-        const regex = /(".*?"|[^",\n]+)(?=\s*,|\s*$)/g;
+        const regex = /"(?:[^"]|"")*"|[^",\n]+/g;
         const cells = [];
-
+    
         let match;
         while ((match = regex.exec(row)) !== null) {
-            const cell = match[0].replace(/^"|"$/g, '').replace(/\\"/g, '"'); // Remove outer quotes, unescape inner quotes
+            let cell = match[0];
+            if (cell.startsWith('"') && cell.endsWith('"')) {
+                // Remove surrounding quotes and handle escaped quotes inside
+                cell = cell.slice(1, -1).replace(/""/g, '"');
+            }
+            // Remove any remaining quotes in the cell
+            cell = cell.replace(/"/g, '');
             cells.push(cell);
         }
         return cells;
