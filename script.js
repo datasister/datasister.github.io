@@ -26,50 +26,32 @@ function handleFile(event) {
         const reader = new FileReader();
         reader.onload = function(e) {
             data = e.target.result; // Store the loaded data
-            processCSV(data);
+            Papa.parse(data, {
+                header: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    processCSV(results.data);  // Now using parsed CSV rows
+                }
+            });
         };
         reader.readAsText(file);
     }
     document.getElementById('analyzeBtn').classList.remove('hidden');
-    document.getElementById('analyzeBtn').disabled = false; // Enable the button again
-    document.getElementById('uploadMessage').classList.add('hidden'); // Hide upload message
-    document.getElementById('results').classList.add('hidden'); // Hide upload message
+    document.getElementById('analyzeBtn').disabled = false;
+    document.getElementById('uploadMessage').classList.add('hidden');
+    document.getElementById('results').classList.add('hidden');
 }
 
 function processCSV(data) {
-    const rows = data.split('\n').map(row => {
-        // Match cells, allowing commas within quoted strings
-        const regex = /"(?:[^"]|"")*"|[^",\n]+/g;
-        const cells = [];
-    
-        let match;
-        while ((match = regex.exec(row)) !== null) {
-            let cell = match[0];
-            if (cell.startsWith('"') && cell.endsWith('"')) {
-                // Remove surrounding quotes and handle escaped quotes inside
-                cell = cell.slice(1, -1).replace(/""/g, '"');
-            }
-            // Remove any remaining quotes in the cell
-            cell = cell.replace(/"/g, '');
-            cells.push(cell);
-        }
-        return cells;
-    });
+    const headers = Object.keys(parsedData[0]);  // Get headers from the first row
+    const totalRows = parsedData.length;
 
-    const headers = rows[0];
-    const fileDetails = document.getElementById('fileDetails');
-    const schemaContainer = document.getElementById('schemaContainer');
-
-    // Calculate total rows
-    const totalRows = rows.length - 1; // Exclude header row
     document.getElementById('columnsUploaded').innerText = `Schema Fields Detected: ${headers.length}`;
 
-    // Create the table for the first five rows
-    const firstThreeRowsHtml = createRowsTable(rows.slice(1, 4), headers); // Skip header row
-
-    // Display the first three rows table
+    const firstThreeRowsHtml = createRowsTable(parsedData.slice(0, 3), headers); // Display first three rows
     document.getElementById('firstThreeRows').innerHTML = firstThreeRowsHtml;
     document.getElementById('totalRows').innerText = `Rows Uploaded: ${totalRows}`;
+
 
     // Set up the schema display
     schemaContainer.innerHTML = headers.map(header => {
@@ -228,7 +210,6 @@ document.getElementById('analyzeBtn').addEventListener('click', () => {
 let columnQualityData = {};  // Object to store quality data for each column
 
 function analyzeData() {
-    //let columnQualityData = {};  // Object to store quality data for each column
     const dropzones = document.querySelectorAll('.dropzone');
     const rows = data.split('\n').map(row => row.split(','));
     const headers = rows[0];
@@ -297,7 +278,7 @@ function showDetail(header, percentage) {
             tableHtml += '</tr>';
         });
     } else {
-        modalText += 'No invalid rows.';
+        modalText += '';
     }
 
     tableHtml += '</table></div>'; // Close the div container
